@@ -20,7 +20,11 @@
 /storage/*.key
 /storage/pail
 /vendor
-_ide_helper.php
+_ide_helper*.php
+.phpstorm.meta.php
+.node_ids
+.idea/
+.vscode/
 Homestead.json
 Homestead.yaml
 Thumbs.db
