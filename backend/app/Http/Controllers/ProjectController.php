@@ -17,12 +17,13 @@ class ProjectController extends Controller
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
+        
         $query = Project::with(['lead', 'sales', 'approver']); 
 
         if ($user->role === 'sales') {
-            $query->where('id_sales', $user->id); //
+            $query->where('id_sales', $user->id); 
         }
-
+        
         return response()->json([
             'success' => true,
             'data' => $query->latest()->paginate(10) 
@@ -39,12 +40,11 @@ class ProjectController extends Controller
             'items.*.qty' => 'required|integer|min:1',
             'items.*.nego_price' => 'required|numeric|min:0',
         ]);
-
         return DB::transaction(function () use ($validated) {
             $project = Project::create([
                 'id_lead' => $validated['id_lead'],
                 'id_sales' => Auth::id(),
-                'status' => 'process',
+                'status' => 'waiting_approval', 
                 'notes' => $validated['notes'],
             ]);
 
@@ -56,8 +56,12 @@ class ProjectController extends Controller
                     'qty' => $item['qty'],
                     'selling_price' => $product->selling_price,
                     'nego_price' => $item['nego_price'],
-                    'needs_approval' => $item['nego_price'] < $product->selling_price ? 1 : 0,
+                    'needs_approval' => $item['nego_price'] < $product->selling_price ? 1 : 0, 
                 ]);
+            }
+            $project->load('lead'); 
+            if ($project->lead) {
+                $project->lead->update(['status' => 'contacted']);
             }
 
             return response()->json(['success' => true, 'data' => $project->load('items')], 201);
@@ -69,7 +73,7 @@ class ProjectController extends Controller
         $project = Project::with([
             'lead',
             'sales',
-            'approver',        // ← tambahkan ini
+            'approver',       
             'items.product'
         ])->find($id);
 
@@ -94,34 +98,43 @@ class ProjectController extends Controller
         ]);
 
         if (in_array($validated['status'], ['approved', 'rejected'])) {
-            return DB::transaction(function () use ($project, $validated, $user) {
-                $project->update([
-                    'status' => $validated['status'],
-                    'id_approved_by' => $user->id,
-                    'approved_at' => now(),
-                    'notes' => $validated['notes'] ?? $project->notes
-                ]);
+            if ($user->role !== 'manager') {
+                return response()->json(['message' => 'Hanya Manager yang dapat menyetujui project'], 403);
+            }
 
-                if ($validated['status'] === 'approved') {
-                    Customer::firstOrCreate(
-                        ['id_lead' => $project->id_lead],
-                        [
-                            'id_project' => $project->id,
-                            'id_sales'   => $project->id_sales,
-                            'name'       => $project->lead->name,
-                            'contact'    => $project->lead->contact,
-                            'address'    => $project->lead->address,
-                            'joined_at'  => now()->toDateString(),
-                        ]
-                    );
-                    $project->lead->update(['status' => 'deal']);
-                } else {
+        return DB::transaction(function () use ($project, $validated, $user) {
+            $project->update([
+                'status' => $validated['status'],
+                'id_approved_by' => $user->id,
+                'approved_at' => now(),
+                'notes' => $validated['notes'] ?? $project->notes
+            ]);
+
+            if ($validated['status'] === 'approved') {
+                $project->load('lead');
+
+                Customer::firstOrCreate(
+                    ['id_lead' => $project->id_lead],
+                    [
+                        'id_project' => $project->id,
+                        'id_sales'   => $project->id_sales,
+                        'name'       => $project->lead->name,
+                        'contact'    => $project->lead->contact,
+                        'address'    => $project->lead->address,
+                        'joined_at'  => now()->toDateString(),
+                    ]
+                );
+    
+                $project->lead->update(['status' => 'deal']);
+    
+                } else if ($validated['status'] === 'rejected') {
+                    $project->load('lead');
                     $project->lead->update(['status' => 'lost']);
                 }
 
-                return response()->json(['success' => true, 'data' => $project->load(['lead', 'sales', 'approver'])]);
-            });
-        }
+                    return response()->json(['success' => true, 'data' => $project->load(['lead', 'sales', 'approver'])]);
+                });
+            }
         if ($user->role === 'sales') {
             if ($project->status !== 'process') {
                 return response()->json(['message' => 'Project yang sudah diajukan tidak dapat diubah'], 422);

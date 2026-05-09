@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Lead;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\Project;
 
 class LeadController extends Controller
 {
@@ -32,21 +34,21 @@ class LeadController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:100',
-            'contact' => 'required|string|max:100',
-            'address' => 'nullable|string',
-            'requirement' => 'nullable|string',
-        ]);
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:100',
+        'contact' => 'required|string|max:100',
+        'address' => 'nullable|string',
+        'requirement' => 'nullable|string',
+    ]);
 
-        $validated['id_sales'] = Auth::id();
-        $validated['status'] = 'new';
+    $validated['id_sales'] = Auth::id();
+    $validated['status'] = 'new'; // 1. Otomatis menjadi 'new'
 
-        $lead = Lead::create($validated);
-        return response()->json(['success' => true, 'data' => $lead], 201);
-    }
+    $lead = Lead::create($validated);
+    return response()->json(['success' => true, 'data' => $lead], 201);
+}
 
     public function show(Lead $lead)
     {

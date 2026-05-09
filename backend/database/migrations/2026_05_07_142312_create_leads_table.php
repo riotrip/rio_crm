@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('contact', 100);
             $table->text('address')->nullable();
             $table->text('requirement')->nullable();
-            $table->enum('status', ['new', 'contacted', 'qualified', 'deal', 'lost'])->default('new')->index();
+            $table->enum('status', ['new', 'contacted', 'deal', 'lost'])->default('new')->index();
             $table->timestamps();
         });
     }

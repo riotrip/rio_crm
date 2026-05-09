@@ -1,19 +1,37 @@
 import { useState, useEffect } from "react";
 import { useProjectStore } from "../../features/projects/store/projectStore";
 import ProjectModal from "./components/ProjectModal";
-import { 
-  BiSearch, BiBriefcase, BiCheckShield, BiTimeFive, 
-  BiChevronLeft, BiChevronRight, BiShowAlt, BiPlus, BiEdit, BiXCircle, BiTask, BiUser
+import {
+  BiSearch,
+  BiBriefcase,
+  BiCheckShield,
+  BiTimeFive,
+  BiChevronLeft,
+  BiChevronRight,
+  BiShowAlt,
+  BiPlus,
+  BiEdit,
+  BiXCircle,
+  BiTask,
+  BiUser,
 } from "react-icons/bi";
 
 export default function ProjectsPage() {
-  const { projects, fetchProjects, pagination, isLoading, updateStatus, fetchProjectDetail } = useProjectStore();
+  const {
+    projects,
+    fetchProjects,
+    pagination,
+    isLoading,
+    updateStatus,
+    fetchProjectDetail,
+  } = useProjectStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [isViewOnly, setIsViewOnly] = useState(false);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Ambil data user dari local storage
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
@@ -24,10 +42,14 @@ export default function ProjectsPage() {
   }, [search, currentPage, fetchProjects]);
 
   const handleAction = async (id, status) => {
-    const confirmMsg = status === 'approved' ? "Setujui project ini?" : "Tolak project ini?";
+    const confirmMsg =
+      status === "approved" ? "Setujui project ini?" : "Tolak project ini?";
     if (window.confirm(confirmMsg)) {
       const res = await updateStatus(id, status);
-      if (res.success) alert(`Project berhasil di-${status}`);
+      if (res.success) {
+        alert(`Project berhasil di-${status}`);
+        fetchProjects({ page: currentPage, search }); // Refresh data setelah aksi
+      }
     }
   };
 
@@ -66,6 +88,7 @@ export default function ProjectsPage() {
             Role: {user.role}
           </p>
         </div>
+
         {user.role === "sales" && (
           <button
             onClick={() => handleOpenModal(null, false)}
@@ -172,25 +195,26 @@ export default function ProjectsPage() {
                           </button>
                         )}
 
-                        {(p.status === "process" ||
-                          p.status === "waiting_approval") && (
-                          <div className="flex gap-1 border-l ml-1 pl-1">
-                            <button
-                              onClick={() => handleAction(p.id, "approved")}
-                              className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
-                              title="Approve"
-                            >
-                              <BiCheckShield size={20} />
-                            </button>
-                            <button
-                              onClick={() => handleAction(p.id, "rejected")}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                              title="Reject"
-                            >
-                              <BiXCircle size={20} />
-                            </button>
-                          </div>
-                        )}
+                        {user.role === "manager" &&
+                          (p.status === "process" ||
+                            p.status === "waiting_approval") && (
+                            <div className="flex gap-1 border-l ml-1 pl-1">
+                              <button
+                                onClick={() => handleAction(p.id, "approved")}
+                                className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
+                                title="Approve & Jadikan Customer"
+                              >
+                                <BiCheckShield size={20} />
+                              </button>
+                              <button
+                                onClick={() => handleAction(p.id, "rejected")}
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                title="Reject"
+                              >
+                                <BiXCircle size={20} />
+                              </button>
+                            </div>
+                          )}
                       </div>
                     </td>
                   </tr>
@@ -207,7 +231,7 @@ export default function ProjectsPage() {
               <span className="font-semibold text-gray-900">
                 {pagination.total}
               </span>{" "}
-              produk
+              data
             </span>
             <div className="flex items-center gap-2">
               <button
