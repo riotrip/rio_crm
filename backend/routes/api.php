@@ -14,5 +14,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/leads', [LeadController::class, 'index']);
+    Route::apiResource('leads', LeadController::class);
 });
