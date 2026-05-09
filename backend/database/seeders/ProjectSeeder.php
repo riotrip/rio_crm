@@ -19,7 +19,7 @@ class ProjectSeeder extends Seeder
             $project = Project::create([
                 'id_lead' => $lead->id,
                 'id_sales' => $lead->id_sales,
-                'status' => 'process',
+                'status' => 'waiting_approval',
                 'notes' => 'Pengajuan pengadaan awal untuk ' . $lead->name,
             ]);
 
