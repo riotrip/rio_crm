@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\Auth;
 
 class LeadController extends Controller
 {
- public function index(Request $request)
+    public function index(Request $request)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        $query = Lead::with('sales:id,name');
+        $query = Lead::with(['sales']);
 
-        if ($user->role !== 'manager') {
+        if ($user->role === 'sales') {
             $query->where('id_sales', $user->id);
         }
 
@@ -26,102 +26,53 @@ class LeadController extends Controller
             });
         }
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        $stats = [
-            'total' => (clone $query)->count(),
-            'deal' => (clone $query)->where('status', 'deal')->count(),
-            'customer' => (clone $query)->whereIn('status', ['qualified', 'deal'])->count(),
-        ];
-
-        $leads = $query->latest()->paginate(10);
-
         return response()->json([
             'success' => true,
-            'stats' => $stats,
-            'data' => $leads 
+            'data' => $query->latest()->paginate(10)
         ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'contact' => 'required|string',
+            'name' => 'required|string|max:100',
+            'contact' => 'required|string|max:100',
             'address' => 'nullable|string',
             'requirement' => 'nullable|string',
-            'status' => 'required|in:new,contacted,qualified,deal,lost'
         ]);
 
         $validated['id_sales'] = Auth::id();
+        $validated['status'] = 'new';
 
         $lead = Lead::create($validated);
-        $lead->load('sales:id,name');
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Lead berhasil ditambahkan',
-            'data' => $lead
-        ], 201);
+        return response()->json(['success' => true, 'data' => $lead], 201);
     }
 
     public function show(Lead $lead)
     {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        if ($user->role !== 'manager' && $lead->id_sales !== $user->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        return response()->json([
-            'success' => true, 
-            'data' => $lead->load('sales:id,name')
-        ]);
+        return response()->json(['success' => true, 'data' => $lead->load('sales')]);
     }
 
     public function update(Request $request, Lead $lead)
     {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        if ($user->role !== 'manager' && $lead->id_sales !== $user->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
         $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'contact' => 'sometimes|required|string',
+            'name' => 'sometimes|required|string|max:100',
+            'contact' => 'sometimes|required|string|max:100',
             'address' => 'nullable|string',
             'requirement' => 'nullable|string',
-            'status' => 'sometimes|required|in:new,contacted,qualified,deal,lost'
         ]);
 
         $lead->update($validated);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Data berhasil diperbarui',
-            'data' => $lead->load('sales:id,name') 
-        ]);
+        return response()->json(['success' => true, 'data' => $lead]);
     }
 
     public function destroy(Lead $lead)
     {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        if ($user->role !== 'manager' && $lead->id_sales !== $user->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (Auth::user()->role !== 'manager' && $lead->id_sales !== Auth::id()) {
+            return response()->json(['message' => 'Forbidden'], 403);
         }
 
         $lead->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Lead berhasil dihapus'
-        ]);
+        return response()->json(['success' => true]);
     }
 }

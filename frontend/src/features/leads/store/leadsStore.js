@@ -1,71 +1,67 @@
 import { create } from "zustand";
 import axios from "../../../lib/axios";
 
-export const useLeadsStore = create((set) => ({
+export const useLeadsStore = create((set, get) => ({
   leads: [],
-  stats: { total: 0, deal: 0, customer: 0 },
-  pagination: { currentPage: 1, lastPage: 1, total: 0 }, 
+  pagination: {
+    currentPage: 1,
+    lastPage: 1,
+    total: 0,
+  },
   isLoading: false,
 
-  fetchLeads: async (params = { page: 1, search: "", status: "" }) => {
+  fetchLeads: async (params = { page: 1, search: "" }) => {
     set({ isLoading: true });
     try {
-      const queryParams = new URLSearchParams(params).toString();
-      const response = await axios.get(`/leads?${queryParams}`);
-
-      const payload = response.data;
+      const response = await axios.get("/leads", { params });
+      const { data, current_page, last_page, total } = response.data.data;
 
       set({
-        leads: payload.data.data,
-        stats: payload.stats, 
+        leads: data,
         pagination: {
-          currentPage: payload.data.current_page,
-          lastPage: payload.data.last_page,
-          total: payload.data.total,
+          currentPage: current_page,
+          lastPage: last_page,
+          total: total,
         },
         isLoading: false,
       });
     } catch (error) {
-      console.error(error);
+      console.error("Fetch Leads Error:", error);
       set({ isLoading: false });
     }
   },
 
-  addLead: async (leadData) => {
+  createLead: async (formData) => {
     try {
-      const response = await axios.post("/leads", leadData);
+      const response = await axios.post("/leads", formData);
       const newLead = response.data.data;
 
       set((state) => ({
         leads: [newLead, ...state.leads],
-        stats: {
-          ...state.stats,
-          total: (state.stats?.total || 0) + 1,
-        },
+        pagination: { ...state.pagination, total: state.pagination.total + 1 },
       }));
       return { success: true };
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || "Gagal menambah lead",
+        message: error.response?.data?.message || "Gagal menambah data lead",
       };
     }
   },
 
-  editLead: async (id, formData) => {
+  updateLead: async (id, formData) => {
     try {
       const response = await axios.put(`/leads/${id}`, formData);
-      set((state) => {
-        const updatedLeads = state.leads.map((lead) =>
-          lead.id === id ? response.data.data : lead,
-        );
-        return { leads: updatedLeads };
-      });
+      const updatedLead = response.data.data;
+
+      set((state) => ({
+        leads: state.leads.map((l) => (l.id === id ? updatedLead : l)),
+      }));
       return { success: true };
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || "Gagal mengedit data",
+        message: error.response?.data?.message || "Gagal memperbarui data",
       };
     }
   },
@@ -73,20 +69,13 @@ export const useLeadsStore = create((set) => ({
   deleteLead: async (id) => {
     try {
       await axios.delete(`/leads/${id}`);
-      set((state) => {
-        const updatedLeads = state.leads.filter((lead) => lead.id !== id);
-        return {
-          leads: updatedLeads,
-          stats: {
-            total: updatedLeads.length,
-            deal: updatedLeads.filter((l) => l.status === "deal").length,
-            customer: updatedLeads.filter((l) => l.status === "qualified")
-              .length,
-          },
-        };
-      });
+      set((state) => ({
+        leads: state.leads.filter((l) => l.id !== id),
+        pagination: { ...state.pagination, total: state.pagination.total - 1 },
+      }));
+      return { success: true };
     } catch (error) {
-      console.error("Gagal menghapus leads:", error);
+      return { success: false, message: "Gagal menghapus data" };
     }
   },
 }));

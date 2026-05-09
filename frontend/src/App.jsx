@@ -6,8 +6,9 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
 import LoginPage from "./pages/auth/LoginPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
-import LeadsPage from "./pages/leads/LeadsPage";
 import ProductsPage from "./pages/products/ProductPage";
+import LeadsPage from "./pages/leads/LeadsPage";
+import ProjectsPage from "./pages/projects/ProjectPage";
 
 function App() {
   const checkSession = useAuthStore((state) => state.checkSession);
@@ -28,8 +29,9 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
             <Route path="/" element={<DashboardPage />} />
-            <Route path="/leads" element={<LeadsPage />} />
             <Route path="/products" element={<ProductsPage />} />
+            <Route path="/leads" element={<LeadsPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
           </Route>
         </Route>
       </Routes>
