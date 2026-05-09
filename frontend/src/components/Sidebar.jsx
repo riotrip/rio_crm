@@ -19,6 +19,11 @@ export default function Sidebar() {
       path: "/leads",
       icon: <BiUserVoice size={20} />,
     },
+    {
+      name: "Manajemen Produk",
+      path: "/products",
+      icon: <BiFolder size={20} />,
+    },
   ];
 
   return (
