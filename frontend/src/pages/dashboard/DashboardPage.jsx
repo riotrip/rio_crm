@@ -7,19 +7,16 @@ import {
   BiRightArrowAlt,
 } from "react-icons/bi";
 import { useAuthStore } from "../../features/auth/store/authStore";
-import { useLeadsStore } from "../../features/leads/store/leadsStore";
+import { useDashboardStore } from "../../features/dashboard/store/dashboardStore";
 
 export default function DashboardPage() {
   const user = useAuthStore((state) => state.user);
-  const {
-    stats = { total: 0, deal: 0, customer: 0 },
-    fetchLeads,
-    isLoading,
-  } = useLeadsStore();
+
+  const { stats, fetchStats, isLoading } = useDashboardStore();
 
   useEffect(() => {
-    fetchLeads();
-  }, [fetchLeads]);
+    fetchStats();
+  }, [fetchStats]);
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -60,7 +57,10 @@ export default function DashboardPage() {
           </div>
         </Link>
 
-        <div className="p-6 bg-white border border-gray-100 rounded-2xl relative overflow-hidden group">
+        <Link
+          to="/projects"
+          className="p-6 bg-white border border-gray-100 rounded-2xl relative overflow-hidden group hover:shadow-xl transition-all block"
+        >
           <div className="flex justify-between items-start relative z-10">
             <div>
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
@@ -74,15 +74,18 @@ export default function DashboardPage() {
               <BiCheckShield size={24} />
             </div>
           </div>
-          <div className="mt-4 text-[10px] font-bold text-gray-400 uppercase relative z-10 tracking-widest">
+          <div className="mt-4 flex items-center gap-1 text-[10px] font-bold text-gray-400 uppercase relative z-10 tracking-widest">
             Target Terpenuhi
           </div>
           <div className="absolute -right-4 -bottom-4 text-gray-100 opacity-20 group-hover:opacity-40 transition-all duration-500">
             <BiCheckShield size={120} />
           </div>
-        </div>
+        </Link>
 
-        <div className="p-6 bg-white border border-gray-100 rounded-2xl relative overflow-hidden group">
+        <Link
+          to="/customers"
+          className="p-6 bg-white border border-gray-100 rounded-2xl relative overflow-hidden group hover:shadow-xl transition-all block"
+        >
           <div className="flex justify-between items-start relative z-10">
             <div>
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
@@ -96,13 +99,13 @@ export default function DashboardPage() {
               <BiBriefcaseAlt2 size={24} />
             </div>
           </div>
-          <div className="mt-4 text-[10px] font-bold text-gray-400 uppercase relative z-10 tracking-widest">
+          <div className="mt-4 flex items-center gap-1 text-[10px] font-bold text-gray-400 uppercase relative z-10 tracking-widest">
             Akun Terdaftar
           </div>
           <div className="absolute -right-4 -bottom-4 text-gray-100 opacity-20 group-hover:opacity-40 transition-all duration-500">
             <BiBriefcaseAlt2 size={120} />
           </div>
-        </div>
+        </Link>
       </div>
     </div>
   );
