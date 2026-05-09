@@ -113,17 +113,39 @@ export default function ProjectModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
           {editData?.status === "approved" && (
-            <div className="bg-green-50 p-4 rounded-2xl border border-green-100 flex items-center gap-4">
-              <div className="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center">
-                <BiCheckShield size={24} />
+            <div className="bg-green-50 p-4 rounded-2xl border border-green-100 space-y-2">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center">
+                  <BiCheckShield size={24} />
+                </div>
+                <div>
+                  <p className="text-[10px] text-green-600 font-bold uppercase tracking-widest">
+                    Project Approved
+                  </p>
+                  <p className="text-sm font-bold text-green-800">
+                    Disetujui oleh: {editData.approver?.name || "-"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] text-green-600 font-bold uppercase tracking-widest">
-                  Project Approved
-                </p>
-                <p className="text-sm font-bold text-green-800">
-                  Oleh: {editData.approver?.name || "System"}
-                </p>
+              <div className="border-t border-green-100 pt-2 grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <p className="text-green-600 font-bold uppercase">Sales</p>
+                  <p className="font-bold text-gray-800">
+                    {editData.sales?.name || "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-green-600 font-bold uppercase">
+                    Tanggal Approve
+                  </p>
+                  <p className="font-bold text-gray-800">
+                    {editData.approved_at
+                      ? new Date(editData.approved_at).toLocaleDateString(
+                          "id-ID",
+                        )
+                      : "-"}
+                  </p>
+                </div>
               </div>
             </div>
           )}

@@ -24,10 +24,11 @@ export const useProjectStore = create((set) => ({
     }
   },
 
-  fetchProjectDetail: async (id) => {
+ fetchProjectDetail: async (id) => {
     try {
-      const response = await axios.get(`/projects/${id}`);
-      return { success: true, data: response.data.data };
+        const response = await axios.get(`/projects/${id}`);
+        console.log(response.data.data);
+        return { success: true, data: response.data.data };
     } catch (error) {
       return { success: false, message: "Gagal memuat detail" };
     }

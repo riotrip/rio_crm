@@ -9,6 +9,7 @@ import DashboardPage from "./pages/dashboard/DashboardPage";
 import ProductsPage from "./pages/products/ProductPage";
 import LeadsPage from "./pages/leads/LeadsPage";
 import ProjectsPage from "./pages/projects/ProjectPage";
+import CustomersPage from "./pages/customers/CustomerPage";
 
 function App() {
   const checkSession = useAuthStore((state) => state.checkSession);
@@ -32,6 +33,7 @@ function App() {
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/leads" element={<LeadsPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/customers" element={<CustomersPage />} />
           </Route>
         </Route>
       </Routes>

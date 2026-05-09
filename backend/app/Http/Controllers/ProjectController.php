@@ -66,7 +66,12 @@ class ProjectController extends Controller
 
     public function show($id)
     {
-        $project = Project::with(['lead', 'sales', 'items.product'])->find($id);
+        $project = Project::with([
+            'lead',
+            'sales',
+            'approver',        // ← tambahkan ini
+            'items.product'
+        ])->find($id);
 
         if (!$project) {
             return response()->json(['message' => 'Project tidak ditemukan'], 404);
@@ -98,13 +103,17 @@ class ProjectController extends Controller
                 ]);
 
                 if ($validated['status'] === 'approved') {
-                    Customer::firstOrCreate(['id_lead' => $project->id_lead], [
-                        'customer_name' => $project->lead->name,
-                        'contact' => $project->lead->contact,
-                        'address' => $project->lead->address,
-                        'join_date' => now(),
-                        'status' => 'active'
-                    ]);
+                    Customer::firstOrCreate(
+                        ['id_lead' => $project->id_lead],
+                        [
+                            'id_project' => $project->id,
+                            'id_sales'   => $project->id_sales,
+                            'name'       => $project->lead->name,
+                            'contact'    => $project->lead->contact,
+                            'address'    => $project->lead->address,
+                            'joined_at'  => now()->toDateString(),
+                        ]
+                    );
                     $project->lead->update(['status' => 'deal']);
                 } else {
                     $project->lead->update(['status' => 'lost']);

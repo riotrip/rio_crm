@@ -29,6 +29,11 @@ export default function Sidebar() {
       path: "/projects",
       icon: <BiBuilding size={20} />,
     },
+    {
+      name: "Manajemen Pelanggan",
+      path: "/customers",
+      icon: <BiUserVoice size={20} />,
+    },
   ];
 
   return (

@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\CustomerController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -22,4 +23,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('leads', LeadController::class);  
 
     Route::apiResource('projects', ProjectController::class);
+
+    Route::apiResource('customers', CustomerController::class)->only(['index', 'show']);
 });
