@@ -18,12 +18,15 @@ class ProductController extends Controller
             $query->where('is_active', true);
         }
 
-        if ($request->filled('search')) {
+        if ($request->filled('search') && $request->search !== '') {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('name', 'ilike', "%{$search}%")
-                  ->orWhere('code', 'ilike', "%{$search}%");
+                $q->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('code', 'LIKE', "%{$search}%");
             });
+        }
+        if ($request->filled('is_active') && $request->is_active !== '') {
+            $query->where('is_active', $request->is_active === 'true' ? 1 : 0);
         }
 
         if ($request->boolean('all')) {

@@ -9,6 +9,7 @@ import {
   BiSearch,
   BiChevronLeft,
   BiChevronRight,
+  BiChevronDown,
   BiPackage,
 } from "react-icons/bi";
 
@@ -28,14 +29,15 @@ export default function ProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState({ is_active: "" });
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      fetchProducts({ page: currentPage, search });
+      fetchProducts({ page: currentPage, search, ...filters });
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [search, currentPage, fetchProducts]);
+  }, [search, currentPage, filters, fetchProducts]);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -100,6 +102,36 @@ export default function ProductsPage() {
             className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm"
           />
         </div>
+
+        <div className="relative">
+          <select
+            className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+            value={filters.is_active}
+            onChange={(e) => {
+              setFilters({ is_active: e.target.value });
+              setCurrentPage(1);
+            }}
+          >
+            <option value="">Semua Status</option>
+            <option value="true">Aktif</option>
+            <option value="false">Tidak Aktif</option>
+          </select>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+            <BiChevronDown size={16} />
+          </div>
+        </div>
+
+        {filters.is_active && (
+          <button
+            onClick={() => {
+              setFilters({ is_active: "" });
+              setCurrentPage(1);
+            }}
+            className="text-xs text-red-500 font-bold hover:underline px-2"
+          >
+            Reset
+          </button>
+        )}
       </div>
 
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">

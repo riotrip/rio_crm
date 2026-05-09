@@ -20,12 +20,28 @@ class LeadController extends Controller
             $query->where('id_sales', $user->id);
         }
 
-        if ($request->filled('search')) {
+        if ($request->filled('search') && $request->search !== '') {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('name', 'ilike', "%{$search}%")
-                  ->orWhere('contact', 'ilike', "%{$search}%");
+                $q->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('contact', 'LIKE', "%{$search}%");
             });
+        }
+
+        if ($request->filled('month') && $request->month !== '') {
+            $query->whereMonth('created_at', $request->month);
+        }
+
+        if ($request->filled('year') && $request->year !== '') {
+            $query->whereYear('created_at', $request->year);
+        }
+
+        if ($request->filled('id_sales') && $user->role === 'manager') {
+            $query->where('id_sales', $request->id_sales);
+        }
+
+        if ($request->filled('status') && $request->status !== '') {
+            $query->where('status', $request->status);
         }
 
         return response()->json([
@@ -34,21 +50,21 @@ class LeadController extends Controller
         ]);
     }
 
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'name' => 'required|string|max:100',
-        'contact' => 'required|string|max:100',
-        'address' => 'nullable|string',
-        'requirement' => 'nullable|string',
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:100',
+            'contact' => 'required|string|max:100',
+            'address' => 'nullable|string',
+            'requirement' => 'nullable|string',
+        ]);
 
-    $validated['id_sales'] = Auth::id();
-    $validated['status'] = 'new'; // 1. Otomatis menjadi 'new'
+        $validated['id_sales'] = Auth::id();
+        $validated['status'] = 'new'; // 1. Otomatis menjadi 'new'
 
-    $lead = Lead::create($validated);
-    return response()->json(['success' => true, 'data' => $lead], 201);
-}
+        $lead = Lead::create($validated);
+        return response()->json(['success' => true, 'data' => $lead], 201);
+    }
 
     public function show(Lead $lead)
     {

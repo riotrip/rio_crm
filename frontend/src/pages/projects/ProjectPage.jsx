@@ -1,19 +1,20 @@
 import { useState, useEffect } from "react";
 import { useProjectStore } from "../../features/projects/store/projectStore";
 import ProjectModal from "./components/ProjectModal";
+import axios from "../../lib/axios";
 import {
   BiSearch,
   BiBriefcase,
   BiCheckShield,
-  BiTimeFive,
   BiChevronLeft,
   BiChevronRight,
+  BiChevronDown,
   BiShowAlt,
   BiPlus,
   BiEdit,
   BiXCircle,
   BiTask,
-  BiUser,
+  BiDownload,
 } from "react-icons/bi";
 
 export default function ProjectsPage() {
@@ -25,21 +26,73 @@ export default function ProjectsPage() {
     updateStatus,
     fetchProjectDetail,
   } = useProjectStore();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [isViewOnly, setIsViewOnly] = useState(false);
+
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Ambil data user dari local storage
+  const [filters, setFilters] = useState({
+    month: "",
+    year: new Date().getFullYear().toString(),
+    id_sales: "",
+    status: "",
+  });
+  const [filterOptions, setFilterOptions] = useState({
+    sales: [],
+  });
+  const [isExporting, setIsExporting] = useState(false);
+
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
+    if (user.role === "manager") {
+      axios
+        .get("/reports/filter-data")
+        .then((res) => {
+          if (res.data.success) {
+            setFilterOptions({
+              sales: res.data.sales || [],
+            });
+          }
+        })
+        .catch((err) => console.error("Gagal memuat filter", err));
+    }
+  }, [user.role]);
+
+  useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      fetchProjects({ page: currentPage, search });
+      fetchProjects({ page: currentPage, search, ...filters });
     }, 500);
     return () => clearTimeout(delayDebounce);
-  }, [search, currentPage, fetchProjects]);
+  }, [search, currentPage, filters, fetchProjects]);
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const res = await axios.get("/reports/export-projects", {
+        params: { search, ...filters },
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `Laporan_Projects_${filters.month || "All"}_${filters.year}.csv`,
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      alert("Gagal mengekspor data laporan");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleAction = async (id, status) => {
     const confirmMsg =
@@ -48,7 +101,7 @@ export default function ProjectsPage() {
       const res = await updateStatus(id, status);
       if (res.success) {
         alert(`Project berhasil di-${status}`);
-        fetchProjects({ page: currentPage, search }); // Refresh data setelah aksi
+        fetchProjects({ page: currentPage, search, ...filters });
       }
     }
   };
@@ -89,26 +142,39 @@ export default function ProjectsPage() {
           </p>
         </div>
 
-        {user.role === "sales" && (
-          <button
-            onClick={() => handleOpenModal(null, false)}
-            className="px-5 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 shadow-lg flex items-center gap-2 transition-all active:scale-95"
-          >
-            <BiPlus size={20} /> Buat Project
-          </button>
-        )}
+        <div className="flex gap-2">
+          {user.role === "manager" && (
+            <button
+              onClick={handleExport}
+              disabled={isExporting}
+              className="px-5 py-2.5 bg-green-600 text-white text-sm font-bold rounded-xl hover:bg-green-700 shadow-lg flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+            >
+              <BiDownload size={20} />{" "}
+              {isExporting ? "Mengekspor..." : "Export Excel"}
+            </button>
+          )}
+
+          {user.role === "sales" && (
+            <button
+              onClick={() => handleOpenModal(null, false)}
+              className="px-5 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 shadow-lg flex items-center gap-2 transition-all active:scale-95"
+            >
+              <BiPlus size={20} /> Buat Project
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-        <div className="relative">
+      <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-wrap gap-3 items-center">
+        <div className="relative flex-1 min-w-[200px]">
           <BiSearch
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
             size={20}
           />
           <input
             type="text"
-            placeholder="Cari project..."
-            className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm transition-all"
+            placeholder="Cari prospek..."
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm transition-all"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -116,6 +182,109 @@ export default function ProjectsPage() {
             }}
           />
         </div>
+
+        <div className="relative">
+          <select
+            className="py-2 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+            value={filters.month}
+            onChange={(e) => {
+              setFilters({ ...filters, month: e.target.value });
+              setCurrentPage(1);
+            }}
+          >
+            <option value="">Semua Bulan</option>
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {new Date(0, i).toLocaleString("id-ID", { month: "long" })}
+              </option>
+            ))}
+          </select>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+            <BiChevronDown size={16} />
+          </div>
+        </div>
+
+        <div className="relative">
+          <select
+            className="py-2 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+            value={filters.year}
+            onChange={(e) => {
+              setFilters({ ...filters, year: e.target.value });
+              setCurrentPage(1);
+            }}
+          >
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+          </select>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+            <BiChevronDown size={16} />
+          </div>
+        </div>
+
+        {user.role === "manager" && (
+          <div className="relative">
+            <select
+              className="py-2 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer min-w-[130px]"
+              value={filters.id_sales}
+              onChange={(e) => {
+                setFilters({ ...filters, id_sales: e.target.value });
+                setCurrentPage(1);
+              }}
+            >
+              <option value="">Semua Sales</option>
+              {filterOptions.sales.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+              <BiChevronDown size={16} />
+            </div>
+          </div>
+        )}
+
+        {user.role === "manager" && (
+          <div className="relative">
+            <select
+              className="py-2 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer min-w-[140px]"
+              value={filters.status}
+              onChange={(e) => {
+                setFilters({ ...filters, status: e.target.value });
+                setCurrentPage(1);
+              }}
+            >
+              <option value="">Semua Status</option>
+              <option value="waiting_approval">Waiting Approval</option>
+              <option value="process">Process</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+              <BiChevronDown size={16} />
+            </div>
+          </div>
+        )}
+
+        {(filters.month ||
+          filters.year !== "2026" ||
+          filters.id_sales ||
+          filters.status) && (
+          <button
+            onClick={() => {
+              setFilters({
+                month: "",
+                year: "2026",
+                id_sales: "",
+                status: "",
+              });
+              setCurrentPage(1);
+            }}
+            className="text-xs text-red-500 font-bold hover:underline px-2"
+          >
+            Reset
+          </button>
+        )}
       </div>
 
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden text-sm">
@@ -124,8 +293,9 @@ export default function ProjectsPage() {
             <thead className="bg-gray-50 text-gray-600 font-bold border-b border-gray-200 uppercase text-[10px] tracking-widest">
               <tr>
                 <th className="px-6 py-4">Project & Lead</th>
+                <th className="px-6 py-4">Sales</th>
                 <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Tgl</th>
+                <th className="px-6 py-4">Tgl Dibuat</th>
                 <th className="px-6 py-4 text-center">Aksi</th>
               </tr>
             </thead>
@@ -133,7 +303,7 @@ export default function ProjectsPage() {
               {isLoading ? (
                 <tr>
                   <td
-                    colSpan="4"
+                    colSpan="5"
                     className="px-6 py-12 text-center text-gray-500 italic"
                   >
                     Memuat data...
@@ -142,10 +312,10 @@ export default function ProjectsPage() {
               ) : projects.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="4"
+                    colSpan="5"
                     className="px-6 py-12 text-center text-gray-400 font-medium"
                   >
-                    Belum ada project.
+                    Belum ada data yang sesuai filter.
                   </td>
                 </tr>
               ) : (
@@ -165,11 +335,16 @@ export default function ProjectsPage() {
                         Lead: {p.lead?.name || "N/A"}
                       </div>
                     </td>
+                    <td className="px-6 py-4 text-gray-700 font-medium">
+                      {p.sales?.name || "-"}
+                    </td>
                     <td className="px-6 py-4">
                       <span
                         className={`px-3 py-1 rounded-full text-[10px] font-black uppercase border ${getStatusBadge(p.status)}`}
                       >
-                        {p.status}
+                        {p.status === "waiting_approval"
+                          ? "WAITING APPROVAL"
+                          : p.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-gray-500 text-[11px]">
@@ -202,7 +377,7 @@ export default function ProjectsPage() {
                               <button
                                 onClick={() => handleAction(p.id, "approved")}
                                 className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
-                                title="Approve & Jadikan Customer"
+                                title="Approve"
                               >
                                 <BiCheckShield size={20} />
                               </button>

@@ -8,6 +8,7 @@ use App\Http\Controllers\LeadController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController; 
+use App\Http\Controllers\ReportController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -29,4 +30,12 @@ Route::middleware('auth:sanctum')->group(function () {
     ]);
 
     Route::apiResource('customers', CustomerController::class)->only(['index', 'show']);
+
+    Route::middleware(['role:manager'])->prefix('reports')->group(function () {
+        Route::get('/filter-data', [ReportController::class, 'getFilterData']);
+        Route::get('/export-projects', [ReportController::class, 'exportProjects']);
+        Route::get('/export-leads', [ReportController::class, 'exportLeads']);
+        Route::get('/export-products', [ReportController::class, 'exportProducts']);
+        Route::get('/export-customers', [ReportController::class, 'exportCustomers']);
+    });
 });

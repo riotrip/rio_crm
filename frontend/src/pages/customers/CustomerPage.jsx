@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useCustomerStore } from "../../features/customers/store/customerStore";
+import axios from "../../lib/axios";
 import {
   BiSearch,
   BiUser,
   BiChevronLeft,
   BiChevronRight,
+  BiChevronDown,
   BiShowAlt,
   BiPhone,
   BiMap,
@@ -19,15 +21,30 @@ export default function CustomersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [filters, setFilters] = useState({ month: "", year: "", id_sales: "" });
+  const [salesList, setSalesList] = useState([]);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
+    if (user.role === "manager") {
+      axios
+        .get("/reports/filter-data")
+        .then((res) => {
+          if (res.data.success) {
+            setSalesList(res.data.sales || []);
+          }
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [user.role]);
+
+  useEffect(() => {
     const delay = setTimeout(() => {
-      fetchCustomers({ page: currentPage, search });
+      fetchCustomers({ page: currentPage, search, ...filters });
     }, 500);
     return () => clearTimeout(delay);
-  }, [search, currentPage, fetchCustomers]);
+  }, [search, currentPage, filters, fetchCustomers]);
 
   const handleView = async (customer) => {
     const { fetchCustomerDetail } = useCustomerStore.getState();
@@ -53,21 +70,97 @@ export default function CustomersPage() {
       </div>
 
       <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-        <div className="relative">
-          <BiSearch
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-            size={20}
-          />
-          <input
-            type="text"
-            placeholder="Cari customer..."
-            className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm transition-all"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-          />
+        <div className="flex flex-col md:flex-row gap-3">
+          <div className="relative flex-1">
+            <BiSearch
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+              size={20}
+            />
+            <input
+              type="text"
+              placeholder="Cari customer..."
+              className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm transition-all"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
+
+          <div className="relative">
+            <select
+              className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+              value={filters.month}
+              onChange={(e) => {
+                setFilters({ ...filters, month: e.target.value });
+                setCurrentPage(1);
+              }}
+            >
+              <option value="">Semua Bulan</option>
+              {Array.from({ length: 12 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {new Date(0, i).toLocaleString("id-ID", { month: "long" })}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+              <BiChevronDown size={16} />
+            </div>
+          </div>
+
+          <div className="relative">
+            <select
+              className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+              value={filters.year}
+              onChange={(e) => {
+                setFilters({ ...filters, year: e.target.value });
+                setCurrentPage(1);
+              }}
+            >
+              <option value="">Semua Tahun</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+              <BiChevronDown size={16} />
+            </div>
+          </div>
+
+          {user.role === "manager" && (
+            <div className="relative">
+              <select
+                className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+                value={filters.id_sales}
+                onChange={(e) => {
+                  setFilters({ ...filters, id_sales: e.target.value });
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Semua Sales</option>
+                {salesList.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <BiChevronDown size={16} />
+              </div>
+            </div>
+          )}
+
+          {(filters.month || filters.year || filters.id_sales) && (
+            <button
+              onClick={() => {
+                setFilters({ month: "", year: "", id_sales: "" });
+                setCurrentPage(1);
+              }}
+              className="text-xs text-red-500 font-bold hover:underline px-2"
+            >
+              Reset
+            </button>
+          )}
         </div>
       </div>
 
