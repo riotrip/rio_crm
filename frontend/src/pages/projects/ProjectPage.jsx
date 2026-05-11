@@ -128,16 +128,16 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 px-3 md:px-0">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-2">
             <div className="p-2 bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-100">
               <BiBriefcase size={20} />
             </div>
             Manajemen Project
           </h1>
-          <p className="text-sm text-gray-500 mt-1 uppercase font-bold tracking-tighter">
+          <p className="text-xs md:text-sm text-gray-500 mt-1 uppercase font-bold tracking-tighter">
             Role: {user.role}
           </p>
         </div>
@@ -147,9 +147,9 @@ export default function ProjectsPage() {
             <button
               onClick={handleExport}
               disabled={isExporting}
-              className="px-5 py-2.5 bg-green-600 text-white text-sm font-bold rounded-xl hover:bg-green-700 shadow-lg flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+              className="px-4 md:px-5 py-2 md:py-2.5 bg-green-600 text-white text-sm font-bold rounded-xl hover:bg-green-700 shadow-lg flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
             >
-              <BiDownload size={20} />{" "}
+              <BiDownload size={18} className="md:w-5 md:h-5" />{" "}
               {isExporting ? "Mengekspor..." : "Export Excel"}
             </button>
           )}
@@ -157,15 +157,15 @@ export default function ProjectsPage() {
           {user.role === "sales" && (
             <button
               onClick={() => handleOpenModal(null, false)}
-              className="px-5 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 shadow-lg flex items-center gap-2 transition-all active:scale-95"
+              className="px-4 md:px-5 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 shadow-lg flex items-center gap-2 transition-all active:scale-95"
             >
-              <BiPlus size={20} /> Buat Project
+              <BiPlus size={18} className="md:w-5 md:h-5" /> Buat Project
             </button>
           )}
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-wrap gap-3 items-center">
+      <div className="bg-white p-3 md:p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
           <BiSearch
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -185,7 +185,7 @@ export default function ProjectsPage() {
 
         <div className="relative">
           <select
-            className="py-2 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+            className="py-2 px-3 md:px-4 pr-8 md:pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
             value={filters.month}
             onChange={(e) => {
               setFilters({ ...filters, month: e.target.value });
@@ -199,14 +199,14 @@ export default function ProjectsPage() {
               </option>
             ))}
           </select>
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-            <BiChevronDown size={16} />
+          <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+            <BiChevronDown size={14} className="md:w-4 md:h-4" />
           </div>
         </div>
 
         <div className="relative">
           <select
-            className="py-2 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+            className="py-2 px-3 md:px-4 pr-8 md:pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
             value={filters.year}
             onChange={(e) => {
               setFilters({ ...filters, year: e.target.value });
@@ -216,54 +216,54 @@ export default function ProjectsPage() {
             <option value="2026">2026</option>
             <option value="2025">2025</option>
           </select>
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-            <BiChevronDown size={16} />
+          <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+            <BiChevronDown size={14} className="md:w-4 md:h-4" />
           </div>
         </div>
 
         {user.role === "manager" && (
-          <div className="relative">
-            <select
-              className="py-2 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer min-w-[130px]"
-              value={filters.id_sales}
-              onChange={(e) => {
-                setFilters({ ...filters, id_sales: e.target.value });
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Semua Sales</option>
-              {filterOptions.sales.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              <BiChevronDown size={16} />
+          <>
+            <div className="relative">
+              <select
+                className="py-2 px-3 md:px-4 pr-8 md:pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer min-w-[120px]"
+                value={filters.id_sales}
+                onChange={(e) => {
+                  setFilters({ ...filters, id_sales: e.target.value });
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Semua Sales</option>
+                {filterOptions.sales.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <BiChevronDown size={14} className="md:w-4 md:h-4" />
+              </div>
             </div>
-          </div>
-        )}
 
-        {user.role === "manager" && (
-          <div className="relative">
-            <select
-              className="py-2 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer min-w-[140px]"
-              value={filters.status}
-              onChange={(e) => {
-                setFilters({ ...filters, status: e.target.value });
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Semua Status</option>
-              <option value="waiting_approval">Waiting Approval</option>
-              <option value="process">Process</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              <BiChevronDown size={16} />
+            <div className="relative">
+              <select
+                className="py-2 px-3 md:px-4 pr-8 md:pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer min-w-[130px]"
+                value={filters.status}
+                onChange={(e) => {
+                  setFilters({ ...filters, status: e.target.value });
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Semua Status</option>
+                <option value="waiting_approval">Waiting Approval</option>
+                <option value="process">Process</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <div className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <BiChevronDown size={14} className="md:w-4 md:h-4" />
+              </div>
             </div>
-          </div>
+          </>
         )}
 
         {(filters.month ||
@@ -287,9 +287,93 @@ export default function ProjectsPage() {
         )}
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden text-sm">
+      <div className="block md:hidden space-y-3">
+        {isLoading ? (
+          <div className="text-center py-12 text-gray-500 italic">
+            Memuat data...
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="text-center py-12 text-gray-400 font-medium">
+            Belum ada data yang sesuai filter.
+          </div>
+        ) : (
+          projects.map((p) => (
+            <div
+              key={p.id}
+              className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <div className="font-bold text-gray-900 flex items-center gap-2">
+                    <BiTask className="text-gray-400 text-sm" />
+                    <span className="truncate max-w-[180px]">
+                      {p.notes || "Project Baru"}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-blue-600 font-bold uppercase mt-0.5">
+                    Lead: {p.lead?.name || "N/A"}
+                  </div>
+                  <div className="text-gray-700 font-medium text-sm mt-2">
+                    Sales: {p.sales?.name || "-"}
+                  </div>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span
+                      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase border ${getStatusBadge(p.status)}`}
+                    >
+                      {p.status === "waiting_approval"
+                        ? "WAITING APPROVAL"
+                        : p.status}
+                    </span>
+                    <span className="text-gray-500 text-[11px]">
+                      {new Date(p.created_at).toLocaleDateString("id-ID")}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex gap-2 pt-2 border-t border-gray-100">
+                    <button
+                      onClick={() => handleOpenModal(p, true)}
+                      className="flex-1 p-2 text-gray-600 hover:bg-gray-100 rounded-lg text-sm font-medium"
+                    >
+                      <BiShowAlt size={16} className="inline mr-1" /> Lihat
+                    </button>
+                    {user.role === "sales" && p.status === "process" && (
+                      <button
+                        onClick={() => handleOpenModal(p, false)}
+                        className="flex-1 p-2 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium"
+                      >
+                        <BiEdit size={16} className="inline mr-1" /> Edit
+                      </button>
+                    )}
+                    {user.role === "manager" &&
+                      (p.status === "process" ||
+                        p.status === "waiting_approval") && (
+                        <>
+                          <button
+                            onClick={() => handleAction(p.id, "approved")}
+                            className="flex-1 p-2 text-green-600 hover:bg-green-50 rounded-lg text-sm font-medium"
+                          >
+                            <BiCheckShield size={16} className="inline mr-1" />{" "}
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleAction(p.id, "rejected")}
+                            className="flex-1 p-2 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium"
+                          >
+                            <BiXCircle size={16} className="inline mr-1" />{" "}
+                            Reject
+                          </button>
+                        </>
+                      )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="hidden md:block bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden text-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-left min-w-[800px]">
             <thead className="bg-gray-50 text-gray-600 font-bold border-b border-gray-200 uppercase text-[10px] tracking-widest">
               <tr>
                 <th className="px-6 py-4">Project & Lead</th>
@@ -359,7 +443,6 @@ export default function ProjectsPage() {
                         >
                           <BiShowAlt size={18} />
                         </button>
-
                         {user.role === "sales" && p.status === "process" && (
                           <button
                             onClick={() => handleOpenModal(p, false)}
@@ -369,7 +452,6 @@ export default function ProjectsPage() {
                             <BiEdit size={18} />
                           </button>
                         )}
-
                         {user.role === "manager" &&
                           (p.status === "process" ||
                             p.status === "waiting_approval") && (
@@ -400,7 +482,7 @@ export default function ProjectsPage() {
         </div>
 
         {!isLoading && pagination.total > 0 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 md:px-6 py-4 border-t border-gray-100 bg-gray-50/50">
             <span className="text-sm text-gray-500">
               Total{" "}
               <span className="font-semibold text-gray-900">
@@ -416,7 +498,7 @@ export default function ProjectsPage() {
               >
                 <BiChevronLeft size={20} />
               </button>
-              <span className="text-sm font-medium text-gray-700 px-4">
+              <span className="text-sm font-medium text-gray-700 px-2 md:px-4">
                 Halaman {pagination.currentPage} dari {pagination.lastPage}
               </span>
               <button

@@ -41,13 +41,13 @@ export default function LeadsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 px-3 md:px-0">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-2">
             <BiUserVoice className="text-blue-600" /> Manajemen Leads
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs md:text-sm text-gray-500">
             Daftar prospek masuk. Status akan berubah otomatis via Projects.
           </p>
         </div>
@@ -56,13 +56,13 @@ export default function LeadsPage() {
             setSelectedLead(null);
             setIsModalOpen(true);
           }}
-          className="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-100 flex items-center gap-2"
+          className="px-4 md:px-5 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-100 flex items-center gap-2 justify-center"
         >
           <BiPlus size={20} /> Tambah Lead
         </button>
       </div>
 
-      <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+      <div className="bg-white p-3 md:p-4 rounded-2xl border border-gray-200 shadow-sm">
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
             <BiSearch
@@ -80,63 +80,65 @@ export default function LeadsPage() {
             />
           </div>
 
-          <div className="relative">
-            <select
-              className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
-              value={filters.month}
-              onChange={(e) => {
-                setFilters({ ...filters, month: e.target.value });
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Semua Bulan</option>
-              {Array.from({ length: 12 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {new Date(0, i).toLocaleString("id-ID", { month: "long" })}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              <BiChevronDown size={16} />
+          <div className="flex flex-wrap gap-2 md:flex-nowrap">
+            <div className="relative flex-1">
+              <select
+                className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer w-full"
+                value={filters.month}
+                onChange={(e) => {
+                  setFilters({ ...filters, month: e.target.value });
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Semua Bulan</option>
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {new Date(0, i).toLocaleString("id-ID", { month: "long" })}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <BiChevronDown size={16} />
+              </div>
             </div>
-          </div>
 
-          <div className="relative">
-            <select
-              className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
-              value={filters.year}
-              onChange={(e) => {
-                setFilters({ ...filters, year: e.target.value });
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Semua Tahun</option>
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              <BiChevronDown size={16} />
+            <div className="relative flex-1">
+              <select
+                className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer w-full"
+                value={filters.year}
+                onChange={(e) => {
+                  setFilters({ ...filters, year: e.target.value });
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Semua Tahun</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <BiChevronDown size={16} />
+              </div>
             </div>
-          </div>
 
-          <div className="relative">
-            <select
-              className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
-              value={filters.status}
-              onChange={(e) => {
-                setFilters({ ...filters, status: e.target.value });
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Semua Status</option>
-              <option value="new">New</option>
-              <option value="contacted">Contacted</option>
-              <option value="qualified">Qualified</option>
-              <option value="deal">Deal</option>
-              <option value="lost">Lost</option>
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              <BiChevronDown size={16} />
+            <div className="relative flex-1">
+              <select
+                className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer w-full"
+                value={filters.status}
+                onChange={(e) => {
+                  setFilters({ ...filters, status: e.target.value });
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Semua Status</option>
+                <option value="new">New</option>
+                <option value="contacted">Contacted</option>
+                <option value="qualified">Qualified</option>
+                <option value="deal">Deal</option>
+                <option value="lost">Lost</option>
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <BiChevronDown size={16} />
+              </div>
             </div>
           </div>
 
@@ -154,9 +156,70 @@ export default function LeadsPage() {
         </div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden text-sm">
+      <div className="block md:hidden space-y-3">
+        {isLoading ? (
+          <div className="text-center py-12 text-gray-500">Memuat data...</div>
+        ) : leads.length === 0 ? (
+          <div className="text-center py-12 text-gray-400">
+            Belum ada data leads.
+          </div>
+        ) : (
+          leads.map((lead) => (
+            <div
+              key={lead.id}
+              className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <div className="font-bold text-gray-900">{lead.name}</div>
+                  <div className="text-[10px] text-gray-400 uppercase tracking-tighter mt-0.5">
+                    Sales: {lead.sales?.name || "-"}
+                  </div>
+                  <div className="text-gray-600 text-sm mt-2">
+                    {lead.contact}
+                  </div>
+                  <div className="text-gray-500 text-xs mt-1 truncate">
+                    {lead.address || "-"}
+                  </div>
+                  <div className="text-gray-500 text-xs mt-1 line-clamp-2">
+                    {lead.requirement || "-"}
+                  </div>
+                  <div className="mt-3">
+                    <span
+                      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase border ${getStatusBadge(lead.status)}`}
+                    >
+                      {lead.status}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setSelectedLead(lead);
+                      setIsModalOpen(true);
+                    }}
+                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                  >
+                    <BiEdit size={18} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (confirm("Hapus lead?")) deleteLead(lead.id);
+                    }}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                  >
+                    <BiTrash size={18} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="hidden md:block bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden text-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-left min-w-[900px]">
             <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-200">
               <tr>
                 <th className="px-6 py-4">Prospek</th>
@@ -198,21 +261,17 @@ export default function LeadsPage() {
                         Sales: {lead.sales?.name || "-"}
                       </div>
                     </td>
-
                     <td className="px-6 py-4 text-gray-600">{lead.contact}</td>
-
                     <td className="px-6 py-4 text-gray-500 max-w-[200px]">
                       <p className="truncate" title={lead.address}>
                         {lead.address || "-"}
                       </p>
                     </td>
-
                     <td className="px-6 py-4 text-gray-500 max-w-[250px]">
                       <p className="line-clamp-2" title={lead.requirement}>
                         {lead.requirement || "-"}
                       </p>
                     </td>
-
                     <td className="px-6 py-4 text-center">
                       <span
                         className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase border ${getStatusBadge(lead.status)}`}
@@ -220,7 +279,6 @@ export default function LeadsPage() {
                         {lead.status}
                       </span>
                     </td>
-
                     <td className="px-6 py-4">
                       <div className="flex justify-center gap-2">
                         <button
@@ -249,7 +307,7 @@ export default function LeadsPage() {
           </table>
         </div>
         {!isLoading && pagination.total > 0 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 md:px-6 py-4 border-t border-gray-100 bg-gray-50/50">
             <span className="text-sm text-gray-500">
               Total{" "}
               <span className="font-semibold text-gray-900">
@@ -265,7 +323,7 @@ export default function LeadsPage() {
               >
                 <BiChevronLeft size={20} />
               </button>
-              <span className="text-sm font-medium px-4">
+              <span className="text-sm font-medium px-2 md:px-4">
                 Halaman {pagination.currentPage} / {pagination.lastPage}
               </span>
               <button

@@ -37,14 +37,14 @@ export default function LeadModal({ isOpen, onClose, editData }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-3 md:p-4">
+      <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 mx-3 md:mx-0">
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-100 bg-gray-50/50">
           <div>
-            <h3 className="text-lg font-bold text-gray-800">
+            <h3 className="text-base md:text-lg font-bold text-gray-800">
               {editData ? "Edit Prospek" : "Tambah Prospek Baru"}
             </h3>
-            <p className="text-xs text-gray-500">
+            <p className="text-[10px] md:text-xs text-gray-500">
               Kelola informasi kontak dan kebutuhan calon pelanggan.
             </p>
           </div>
@@ -52,11 +52,14 @@ export default function LeadModal({ isOpen, onClose, editData }) {
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
           >
-            <BiX size={24} />
+            <BiX size={20} className="md:w-6 md:h-6" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form
+          onSubmit={handleSubmit}
+          className="p-4 md:p-6 space-y-4 md:space-y-5"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 ml-1">
@@ -134,9 +137,9 @@ export default function LeadModal({ isOpen, onClose, editData }) {
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100"
+              className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100 text-sm md:text-base"
             >
-              <BiSave size={18} />{" "}
+              <BiSave size={16} className="md:w-[18px] md:h-[18px]" />{" "}
               {editData ? "SIMPAN PERUBAHAN" : "TAMBAH PROSPEK"}
             </button>
           </div>

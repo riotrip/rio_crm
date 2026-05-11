@@ -68,27 +68,27 @@ export default function ProductsPage() {
     }).format(val);
 
   return (
-    <div>
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+    <div className="px-3 md:px-0">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-2">
             <BiPackage className="text-blue-600" /> Manajemen Produk
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs md:text-sm text-gray-500">
             Kelola daftar paket layanan dan struktur harga jual Anda.
           </p>
         </div>
         {user?.role === "manager" && (
           <button
             onClick={handleAdd}
-            className="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all flex items-center gap-2"
+            className="px-4 md:px-5 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all flex items-center gap-2 justify-center"
           >
             <BiPlus size={20} /> Tambah Produk Baru
           </button>
         )}
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 mb-6 bg-white p-4 rounded-2xl border border-gray-200">
+      <div className="flex flex-col md:flex-row gap-4 mb-6 bg-white p-3 md:p-4 rounded-2xl border border-gray-200">
         <div className="flex-1 relative">
           <BiSearch
             className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
@@ -105,7 +105,7 @@ export default function ProductsPage() {
 
         <div className="relative">
           <select
-            className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+            className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer w-full"
             value={filters.is_active}
             onChange={(e) => {
               setFilters({ is_active: e.target.value });
@@ -134,9 +134,82 @@ export default function ProductsPage() {
         )}
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+      <div className="block md:hidden space-y-3">
+        {isLoading ? (
+          <div className="text-center py-12 text-gray-500">Memuat data...</div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-12 text-gray-400">
+            Tidak ada produk ditemukan.
+          </div>
+        ) : (
+          products.map((product) => (
+            <div
+              key={product.id}
+              className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <div className="font-semibold text-gray-900 text-base">
+                    {product.name}
+                  </div>
+                  <div className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-wider mt-0.5">
+                    {product.code}
+                  </div>
+                  <div className="mt-3 space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-500">HPP:</span>
+                      <span className="text-xs font-semibold">
+                        {formatIDR(product.hpp)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-500">Margin:</span>
+                      <span className="text-xs font-bold text-green-600">
+                        +{product.margin}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-500">Harga Jual:</span>
+                      <span className="text-sm font-black text-gray-900">
+                        {formatIDR(product.selling_price)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center pt-2">
+                      <span
+                        className={`text-[10px] font-bold px-2 py-1 rounded-full ${product.is_active ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-400"}`}
+                      >
+                        {product.is_active ? "AKTIF" : "NONAKTIF"}
+                      </span>
+                      {user?.role === "manager" && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEdit(product)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                          >
+                            <BiEdit size={18} />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleDelete(product.id, product.name)
+                            }
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                          >
+                            <BiTrash size={18} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="hidden md:block bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
+          <table className="w-full text-sm text-left min-w-[800px]">
             <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-200">
               <tr>
                 <th className="px-6 py-4">Informasi Produk</th>
@@ -256,7 +329,7 @@ export default function ProductsPage() {
         </div>
 
         {!isLoading && pagination.total > 0 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 md:px-6 py-4 border-t border-gray-100 bg-gray-50/50">
             <span className="text-sm text-gray-500">
               Total{" "}
               <span className="font-semibold text-gray-900">
@@ -272,7 +345,7 @@ export default function ProductsPage() {
               >
                 <BiChevronLeft size={20} />
               </button>
-              <span className="text-sm font-medium text-gray-700 px-4">
+              <span className="text-sm font-medium text-gray-700 px-2 md:px-4">
                 Halaman {pagination.currentPage} dari {pagination.lastPage}
               </span>
               <button

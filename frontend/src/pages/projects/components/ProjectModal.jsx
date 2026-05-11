@@ -93,10 +93,10 @@ export default function ProjectModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-3 md:p-4">
+      <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] mx-3 md:mx-0">
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-100">
+          <h3 className="text-base md:text-lg font-bold text-gray-800">
             {editData
               ? isLocked
                 ? "Detail Data Project"
@@ -107,22 +107,25 @@ export default function ProjectModal({
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
           >
-            <BiX size={24} />
+            <BiX size={20} className="md:w-6 md:h-6" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="p-4 md:p-6 space-y-4 overflow-y-auto"
+        >
           {editData?.status === "approved" && (
-            <div className="bg-green-50 p-4 rounded-2xl border border-green-100 space-y-2">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center">
-                  <BiCheckShield size={24} />
+            <div className="bg-green-50 p-3 md:p-4 rounded-2xl border border-green-100 space-y-2">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center">
+                  <BiCheckShield size={20} className="md:w-6 md:h-6" />
                 </div>
                 <div>
                   <p className="text-[10px] text-green-600 font-bold uppercase tracking-widest">
                     Project Approved
                   </p>
-                  <p className="text-sm font-bold text-green-800">
+                  <p className="text-xs md:text-sm font-bold text-green-800">
                     Disetujui oleh: {editData.approver?.name || "-"}
                   </p>
                 </div>
@@ -173,9 +176,8 @@ export default function ProjectModal({
                   </option>
                 ))}
               </select>
-
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                <BiChevronDown size={20} />
+                <BiChevronDown size={18} className="md:w-5 md:h-5" />
               </div>
             </div>
           </div>
@@ -199,7 +201,7 @@ export default function ProjectModal({
                   }
                   className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
                 >
-                  <BiPlus /> Tambah Item
+                  <BiPlus size={14} /> Tambah Item
                 </button>
               )}
             </div>
@@ -208,13 +210,13 @@ export default function ProjectModal({
               {formData.items.map((item, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-12 gap-2 bg-gray-50 p-3 rounded-2xl border border-gray-100 items-center"
+                  className="grid grid-cols-12 gap-1 md:gap-2 bg-gray-50 p-2 md:p-3 rounded-2xl border border-gray-100 items-center"
                 >
-                  <div className="col-span-6 relative">
+                  <div className="col-span-5 md:col-span-6 relative">
                     <select
                       required
                       disabled={isLocked}
-                      className="w-full px-3 pr-8 py-2 bg-white border border-gray-200 rounded-xl text-xs outline-none appearance-none cursor-pointer disabled:opacity-60"
+                      className="w-full px-2 md:px-3 pr-6 md:pr-8 py-2 bg-white border border-gray-200 rounded-xl text-xs outline-none appearance-none cursor-pointer disabled:opacity-60"
                       value={item.id_product}
                       onChange={(e) =>
                         handleItemChange(index, "id_product", e.target.value)
@@ -227,8 +229,8 @@ export default function ProjectModal({
                         </option>
                       ))}
                     </select>
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                      <BiChevronDown size={16} />
+                    <div className="absolute right-1 md:right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                      <BiChevronDown size={12} className="md:w-4 md:h-4" />
                     </div>
                   </div>
 
@@ -238,7 +240,7 @@ export default function ProjectModal({
                       disabled={isLocked}
                       type="number"
                       placeholder="Qty"
-                      className="w-full px-2 py-2 bg-white border border-gray-200 rounded-xl text-xs text-center outline-none disabled:opacity-60"
+                      className="w-full px-1 md:px-2 py-2 bg-white border border-gray-200 rounded-xl text-xs text-center outline-none disabled:opacity-60"
                       value={item.qty}
                       onChange={(e) =>
                         handleItemChange(index, "qty", e.target.value)
@@ -246,12 +248,12 @@ export default function ProjectModal({
                     />
                   </div>
 
-                  <div className="col-span-3 text-right">
+                  <div className="col-span-4 md:col-span-3 text-right">
                     <input
                       required
                       disabled={isLocked}
                       type="number"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-blue-600 outline-none text-right disabled:opacity-60"
+                      className="w-full px-2 md:px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-blue-600 outline-none text-right disabled:opacity-60"
                       value={item.nego_price}
                       onChange={(e) =>
                         handleItemChange(index, "nego_price", e.target.value)
@@ -271,7 +273,10 @@ export default function ProjectModal({
                         }
                         className="text-red-400 hover:text-red-600 transition-colors"
                       >
-                        <BiTrash size={18} />
+                        <BiTrash
+                          size={14}
+                          className="md:w-[18px] md:h-[18px]"
+                        />
                       </button>
                     </div>
                   )}
@@ -280,11 +285,11 @@ export default function ProjectModal({
             </div>
           </div>
 
-          <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 text-center">
+          <div className="bg-blue-50 p-3 md:p-4 rounded-2xl border border-blue-100 text-center">
             <p className="text-[10px] text-blue-600 font-bold uppercase mb-1 tracking-widest">
               Total Nilai Project
             </p>
-            <p className="text-2xl font-black text-blue-800">
+            <p className="text-xl md:text-2xl font-black text-blue-800">
               {formatIDR(calculateTotal())}
             </p>
           </div>
@@ -292,9 +297,9 @@ export default function ProjectModal({
           {!isLocked && (
             <button
               type="submit"
-              className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 flex items-center justify-center gap-2 shadow-lg shadow-blue-100 transition-all active:scale-95"
+              className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 flex items-center justify-center gap-2 shadow-lg shadow-blue-100 transition-all active:scale-95 text-sm md:text-base"
             >
-              <BiSave size={18} />{" "}
+              <BiSave size={16} className="md:w-[18px] md:h-[18px]" />{" "}
               {editData ? "SIMPAN PERUBAHAN" : "SIMPAN & AJUKAN"}
             </button>
           )}

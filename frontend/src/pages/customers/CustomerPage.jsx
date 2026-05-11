@@ -54,22 +54,22 @@ export default function CustomersPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 px-3 md:px-0">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-2">
             <div className="p-2 bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-100">
               <BiUser size={20} />
             </div>
             Customer Aktif
           </h1>
-          <p className="text-sm text-gray-500 mt-1 uppercase font-bold tracking-tighter">
+          <p className="text-xs md:text-sm text-gray-500 mt-1 uppercase font-bold tracking-tighter">
             Role: {user.role}
           </p>
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+      <div className="bg-white p-3 md:p-4 rounded-2xl border border-gray-200 shadow-sm">
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
             <BiSearch
@@ -88,59 +88,20 @@ export default function CustomersPage() {
             />
           </div>
 
-          <div className="relative">
-            <select
-              className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
-              value={filters.month}
-              onChange={(e) => {
-                setFilters({ ...filters, month: e.target.value });
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Semua Bulan</option>
-              {Array.from({ length: 12 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {new Date(0, i).toLocaleString("id-ID", { month: "long" })}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              <BiChevronDown size={16} />
-            </div>
-          </div>
-
-          <div className="relative">
-            <select
-              className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
-              value={filters.year}
-              onChange={(e) => {
-                setFilters({ ...filters, year: e.target.value });
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Semua Tahun</option>
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              <BiChevronDown size={16} />
-            </div>
-          </div>
-
-          {user.role === "manager" && (
-            <div className="relative">
+          <div className="flex flex-wrap gap-2 md:flex-nowrap">
+            <div className="relative flex-1">
               <select
-                className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
-                value={filters.id_sales}
+                className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer w-full"
+                value={filters.month}
                 onChange={(e) => {
-                  setFilters({ ...filters, id_sales: e.target.value });
+                  setFilters({ ...filters, month: e.target.value });
                   setCurrentPage(1);
                 }}
               >
-                <option value="">Semua Sales</option>
-                {salesList.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
+                <option value="">Semua Bulan</option>
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {new Date(0, i).toLocaleString("id-ID", { month: "long" })}
                   </option>
                 ))}
               </select>
@@ -148,7 +109,48 @@ export default function CustomersPage() {
                 <BiChevronDown size={16} />
               </div>
             </div>
-          )}
+
+            <div className="relative flex-1">
+              <select
+                className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer w-full"
+                value={filters.year}
+                onChange={(e) => {
+                  setFilters({ ...filters, year: e.target.value });
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Semua Tahun</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <BiChevronDown size={16} />
+              </div>
+            </div>
+
+            {user.role === "manager" && (
+              <div className="relative flex-1">
+                <select
+                  className="py-2.5 px-4 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer w-full"
+                  value={filters.id_sales}
+                  onChange={(e) => {
+                    setFilters({ ...filters, id_sales: e.target.value });
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="">Semua Sales</option>
+                  {salesList.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                  <BiChevronDown size={16} />
+                </div>
+              </div>
+            )}
+          </div>
 
           {(filters.month || filters.year || filters.id_sales) && (
             <button
@@ -164,9 +166,62 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden text-sm">
+      <div className="block md:hidden space-y-3">
+        {isLoading ? (
+          <div className="text-center py-12 text-gray-500">Memuat data...</div>
+        ) : customers.length === 0 ? (
+          <div className="text-center py-12 text-gray-400">
+            Belum ada customer aktif.
+          </div>
+        ) : (
+          customers.map((c) => (
+            <div
+              key={c.id}
+              className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <div className="font-bold text-gray-900 flex items-center gap-2">
+                    <BiUser className="text-gray-400" />
+                    {c.name}
+                  </div>
+                  <div className="text-[11px] text-blue-600 font-bold uppercase mt-0.5 flex items-center gap-1">
+                    <BiMap size={11} /> {c.address || "-"}
+                  </div>
+                  <div className="text-gray-500 flex items-center gap-1 mt-2">
+                    <BiPhone size={13} /> {c.contact || "-"}
+                  </div>
+                  {user.role === "manager" && (
+                    <div className="text-gray-500 text-xs mt-1">
+                      Sales: {c.sales?.name || "-"}
+                    </div>
+                  )}
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-black uppercase px-3 py-1 rounded-full">
+                      {c.project?.items?.length || 0} layanan
+                    </span>
+                    <div className="text-gray-500 text-[11px] flex items-center gap-1">
+                      <BiCalendar size={12} />
+                      {new Date(c.joined_at).toLocaleDateString("id-ID")}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleView(c)}
+                  className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                >
+                  <BiShowAlt size={18} />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden text-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-left min-w-[800px]">
             <thead className="bg-gray-50 text-gray-600 font-bold border-b border-gray-200 uppercase text-[10px] tracking-widest">
               <tr>
                 <th className="px-6 py-4">Customer</th>
@@ -213,7 +268,7 @@ export default function CustomersPage() {
                         <BiMap size={11} /> {c.address || "-"}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-gray-500 flex items-center gap-1 mt-3">
+                    <td className="px-6 py-4 text-gray-500 flex items-center gap-1">
                       <BiPhone size={13} /> {c.contact || "-"}
                     </td>
                     {user.role === "manager" && (
@@ -251,7 +306,7 @@ export default function CustomersPage() {
         </div>
 
         {!isLoading && pagination.total > 0 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 md:px-6 py-4 border-t border-gray-100 bg-gray-50/50">
             <span className="text-sm text-gray-500">
               Total{" "}
               <span className="font-semibold text-gray-900">
@@ -267,7 +322,7 @@ export default function CustomersPage() {
               >
                 <BiChevronLeft size={20} />
               </button>
-              <span className="text-sm font-medium text-gray-700 px-4">
+              <span className="text-sm font-medium text-gray-700 px-2 sm:px-4">
                 Halaman {pagination.currentPage} dari {pagination.lastPage}
               </span>
               <button
